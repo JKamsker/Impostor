@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using Impostor.Api.Extensions;
 using Impostor.Api.Net.Messages;
 
-namespace Impostor.Server.GameData.Objects
+namespace Impostor.Api.Innersloth.Net.Objects
 {
     public partial class InnerGameData
     {
@@ -21,19 +21,19 @@ namespace Impostor.Server.GameData.Objects
 
             public byte PlayerId { get; }
 
-            public string PlayerName { get; private set; }
+            public string PlayerName { get; internal set; }
 
-            public byte ColorId { get; private set; }
+            public byte ColorId { get; internal set; }
 
-            public uint HatId { get; private set; }
+            public uint HatId { get; internal set; }
 
-            public uint PetId { get; private set; }
+            public uint PetId { get; internal set; }
 
-            public uint SkinId { get; private set; }
+            public uint SkinId { get; internal set; }
 
-            public bool Disconnected { get; private set; }
+            public bool Disconnected { get; internal set; }
 
-            public bool IsImpostor { get; private set; }
+            public bool IsImpostor { get; internal set; }
 
             public bool IsDead { get; private set; }
 

@@ -3,6 +3,7 @@ using System.Net;
 using System.Threading.Tasks;
 using Impostor.Api.Innersloth;
 using Impostor.Api.Innersloth.Data;
+using Impostor.Api.Innersloth.Net;
 using Impostor.Api.Net;
 using Impostor.Api.Net.Messages;
 
@@ -15,6 +16,8 @@ namespace Impostor.Api.Games
         GameCode Code { get; }
 
         GameStates GameState { get; }
+
+        GameNet GameNet { get; }
 
         IEnumerable<IClientPlayer> Players { get; }
 
@@ -29,6 +32,11 @@ namespace Impostor.Api.Games
         IDictionary<object, object> Items { get; }
 
         int HostId { get; }
+
+        IClientPlayer GetClientPlayer(int clientId);
+
+        T FindObjectByNetId<T>(uint netId)
+            where T : InnerNetObject;
 
         /// <summary>
         ///     Send the message to all players.

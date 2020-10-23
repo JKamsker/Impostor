@@ -1,40 +1,48 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
-
 using Impostor.Api.Games;
+using Impostor.Api.Innersloth.Net.Objects.Components;
+using Impostor.Api.Net;
 using Impostor.Api.Net.Messages;
-using Impostor.Server.GameData.Objects.Components;
 
-namespace Impostor.Server.GameData.Objects
+namespace Impostor.Api.Innersloth.Net.Objects
 {
     public partial class InnerGameData : InnerNetObject
     {
         private readonly IGame _game;
-        private readonly List<PlayerInfo> _allPlayers;
+        private readonly ConcurrentDictionary<byte, PlayerInfo> _allPlayers;
 
         public InnerGameData(IGame game)
         {
             _game = game;
-            _allPlayers = new List<PlayerInfo>();
+            _allPlayers = new ConcurrentDictionary<byte, PlayerInfo>();
 
             Components.Add(this);
             Components.Add(new InnerVoteBanSystem());
         }
 
-        public PlayerInfo GetPlayerById(byte id)
-        {
-            foreach (var player in _allPlayers)
-            {
-                if (player.PlayerId == id)
-                {
-                    return player;
-                }
-            }
+        public int PlayerCount => _allPlayers.Count;
 
-            return null;
+        public IReadOnlyDictionary<byte, PlayerInfo> Players => _allPlayers;
+
+        internal void AddPlayer(InnerPlayerControl control)
+        {
+            var playerId = control.PlayerId;
+            var playerInfo = new PlayerInfo(control.PlayerId);
+
+            if (_allPlayers.TryAdd(playerId, playerInfo))
+            {
+                control.PlayerInfo = playerInfo;
+            }
         }
 
-        public override void HandleRpc(byte callId, IMessageReader reader)
+        public PlayerInfo GetPlayerById(byte id)
+        {
+            return _allPlayers.TryGetValue(id, out var player) ? player : null;
+        }
+
+        public override void HandleRpc(IClientPlayer sender, byte callId, IMessageReader reader)
         {
             throw new NotImplementedException();
         }
@@ -44,23 +52,27 @@ namespace Impostor.Server.GameData.Objects
             throw new NotImplementedException();
         }
 
-        public override void Deserialize(IMessageReader reader, bool initialState)
+        public override void Deserialize(IClientPlayer sender, IMessageReader reader, bool initialState)
         {
             if (initialState)
             {
-                //Todo: Write back the pos
-                var span = reader.Buffer.Span;
                 var num = reader.ReadPackedInt32();
 
                 for (var i = 0; i < num; i++)
                 {
-                    _allPlayers.Add(PlayerInfo.Deserialize(ref span));
+                    var playerInfo = new PlayerInfo(reader.ReadByte());
+
+                    playerInfo.Deserialize(reader);
+
+                    if (!_allPlayers.TryAdd(playerInfo.PlayerId, playerInfo))
+                    {
+                        throw new ImpostorException("Failed to add player to InnerGameData.");
+                    }
                 }
-                
             }
             else
             {
-                throw new NotImplementedException("This shouldn't happen, according to Among Us assembly..");
+                throw new NotImplementedException("This shouldn't happen, according to Among Us disassembly..");
 
                 // var num = reader.ReadByte();
                 //

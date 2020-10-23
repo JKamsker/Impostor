@@ -3,7 +3,7 @@ using System.Buffers.Binary;
 using System.Runtime.CompilerServices;
 using System.Text;
 
-namespace Impostor.Api.Extensions
+namespace Impostor.Api
 {
     /// <summary>
     /// Priovides a StreamReader-like api throught extensions

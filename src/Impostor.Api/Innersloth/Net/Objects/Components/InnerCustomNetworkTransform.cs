@@ -1,9 +1,9 @@
 ﻿using System.Numerics;
-using Impostor.Api.Innersloth;
+using Impostor.Api.Net;
 using Impostor.Api.Net.Messages;
 using Microsoft.Extensions.Logging;
 
-namespace Impostor.Server.GameData.Objects.Components
+namespace Impostor.Api.Innersloth.Net.Objects.Components
 {
     public class InnerCustomNetworkTransform : InnerNetObject
     {
@@ -44,7 +44,7 @@ namespace Impostor.Server.GameData.Objects.Components
             return new Vector2(XRange.Lerp(v1), YRange.Lerp(v2));
         }
 
-        public override void HandleRpc(byte callId, IMessageReader reader)
+        public override void HandleRpc(IClientPlayer sender, byte callId, IMessageReader reader)
         {
             if (callId == 0)
             {
@@ -75,7 +75,7 @@ namespace Impostor.Server.GameData.Objects.Components
             return true;
         }
 
-        public override void Deserialize(IMessageReader reader, bool initialState)
+        public override void Deserialize(IClientPlayer sender, IMessageReader reader, bool initialState)
         {
             var sequenceId = reader.ReadUInt16();
 

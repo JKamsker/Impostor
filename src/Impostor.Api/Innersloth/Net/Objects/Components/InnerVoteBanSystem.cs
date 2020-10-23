@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using Impostor.Api.Net;
 using Impostor.Api.Net.Messages;
 
-namespace Impostor.Server.GameData.Objects.Components
+namespace Impostor.Api.Innersloth.Net.Objects.Components
 {
     public class InnerVoteBanSystem : InnerNetObject
     {
@@ -13,7 +14,7 @@ namespace Impostor.Server.GameData.Objects.Components
             _votes = new Dictionary<int, int[]>();
         }
 
-        public override void HandleRpc(byte callId, IMessageReader reader)
+        public override void HandleRpc(IClientPlayer sender, byte callId, IMessageReader reader)
         {
             throw new NotImplementedException();
         }
@@ -23,15 +24,19 @@ namespace Impostor.Server.GameData.Objects.Components
             throw new NotImplementedException();
         }
 
-        public override void Deserialize(IMessageReader reader, bool initialState)
+        public override void Deserialize(IClientPlayer sender, IMessageReader reader, bool initialState)
         {
             var votes = _votes;
-            var unknown = reader.ReadBoolean();
-            if (unknown)
+            var unknown = reader.ReadByte();
+            if (unknown != 0)
             {
-                while (true)
+                for (var i = 0; i < unknown; i++)
                 {
                     var v4 = reader.ReadInt32();
+                    if (v4 == 0)
+                    {
+                        break;
+                    }
 
                     if (!votes.TryGetValue(v4, out var v12))
                     {
@@ -39,9 +44,9 @@ namespace Impostor.Server.GameData.Objects.Components
                         votes[v4] = v12;
                     }
 
-                    for (var i = 0; i < 3; i++)
+                    for (var j = 0; j < 3; j++)
                     {
-                        v12[i] = reader.ReadPackedInt32();
+                        v12[j] = reader.ReadPackedInt32();
                     }
                 }
             }
