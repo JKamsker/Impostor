@@ -285,6 +285,7 @@ namespace Impostor.Hazel
                 byte b = (byte)(value & 0xFF);
                 if (value >= 0x80)
                 {
+                    //Set b to 128 if its 0;
                     b |= 0x80;
                 }
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+
 using Impostor.Api.Games;
 using Impostor.Api.Net.Messages;
 using Impostor.Server.GameData.Objects.Components;
@@ -47,14 +48,15 @@ namespace Impostor.Server.GameData.Objects
         {
             if (initialState)
             {
+                //Todo: Write back the pos
+                var span = reader.Buffer.Span;
                 var num = reader.ReadPackedInt32();
 
                 for (var i = 0; i < num; i++)
                 {
-                    var playerInfo = new PlayerInfo(reader.ReadByte());
-                    playerInfo.Deserialize(reader);
-                    _allPlayers.Add(playerInfo);
+                    _allPlayers.Add(PlayerInfo.Deserialize(ref span));
                 }
+                
             }
             else
             {

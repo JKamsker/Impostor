@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+
+using Impostor.Api.Extensions;
 using Impostor.Api.Net.Messages;
 
 namespace Impostor.Server.GameData.Objects
@@ -8,6 +10,10 @@ namespace Impostor.Server.GameData.Objects
     {
         public class PlayerInfo
         {
+            public PlayerInfo()
+            {
+            }
+
             public PlayerInfo(byte playerId)
             {
                 PlayerId = playerId;
@@ -56,6 +62,33 @@ namespace Impostor.Server.GameData.Objects
                     Tasks.Add(new TaskInfo());
                     Tasks[i].Deserialize(reader);
                 }
+            }
+
+            public static PlayerInfo Deserialize(ref ReadOnlySpan<byte> reader)
+            {
+                var info = new PlayerInfo
+                {
+                    PlayerName = reader.ReadString(),
+                    ColorId = reader.ReadByte(),
+                    HatId = reader.ReadPackedUInt32(),
+                    PetId = reader.ReadPackedUInt32(),
+                    SkinId = reader.ReadPackedUInt32(),
+                };
+
+                var flag = reader.ReadByte();
+                info.Disconnected = (flag & 1) > 0;
+                info.IsImpostor = (flag & 2) > 0;
+                info.IsDead = (flag & 4) > 0;
+
+                var taskCount = reader.ReadByte();
+
+                info.Tasks = new List<TaskInfo>(taskCount);
+                for (var i = 0; i < taskCount; i++)
+                {
+                    info.Tasks.Add(TaskInfo.Deserialize(ref reader));
+                }
+
+                return info;
             }
         }
     }

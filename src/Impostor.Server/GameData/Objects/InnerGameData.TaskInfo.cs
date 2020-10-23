@@ -1,4 +1,7 @@
-﻿using Impostor.Api.Net.Messages;
+﻿using System;
+
+using Impostor.Api.Extensions;
+using Impostor.Api.Net.Messages;
 
 namespace Impostor.Server.GameData.Objects
 {
@@ -21,6 +24,12 @@ namespace Impostor.Server.GameData.Objects
                 this.Id = reader.ReadPackedUInt32();
                 this.Complete = reader.ReadBoolean();
             }
+
+            public static TaskInfo Deserialize(ref ReadOnlySpan<byte> reader) => new TaskInfo
+            {
+                Id = reader.ReadPackedUInt32(),
+                Complete = reader.ReadBoolean(),
+            };
         }
     }
 }

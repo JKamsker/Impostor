@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Buffers.Binary;
 using System.Runtime.CompilerServices;
+using System.Text;
 
 namespace Impostor.Api.Extensions
 {
@@ -50,6 +51,50 @@ namespace Impostor.Api.Extensions
         private static unsafe float Int32BitsToSingle(int value)
         {
             return *((float*)&value);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static int ReadPackedInt32(this ref ReadOnlySpan<byte> input)
+        {
+            return (int)ReadPackedUInt32(ref input);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static uint ReadPackedUInt32(this ref ReadOnlySpan<byte> input)
+        {
+            bool readMore = true;
+            int shift = 0;
+            uint output = 0;
+
+            while (readMore)
+            {
+                byte b = input[0];
+                input = input.Slice(1);
+
+                if (b >= 128)
+                {
+                    b ^= 0x80;
+                }
+                else
+                {
+                    readMore = false;
+                }
+
+                output |= (uint)(b << shift);
+                shift += 7;
+            }
+
+            return output;
+        }
+
+        public static string ReadString(this ref ReadOnlySpan<byte> input)
+        {
+            var len = input.ReadPackedInt32();
+            var stringWindow = input.Slice(0, len);
+            input = input.Slice(len);
+
+            var output = Encoding.UTF8.GetString(stringWindow);
+            return output;
         }
 
         /// <summary>
