@@ -74,17 +74,19 @@ namespace Impostor.Hazel
         {
             // Make a copy to avoid race condition between null check and invocation
             var handler = NewConnection;
-            if (handler != null)
+            if (handler == null)
             {
-                try
-                {
-                    await handler(new NewConnectionEventArgs(msg, connection));
-                }
-                catch (Exception e)
-                {
-                    Logger.Error(e, "Accepting connection failed");
-                    await connection.Disconnect("Accepting connection failed");
-                }
+                return;
+            }
+
+            try
+            {
+                await handler(new NewConnectionEventArgs(msg, connection));
+            }
+            catch (Exception e)
+            {
+                Logger.Error(e, "Accepting connection failed");
+                await connection.Disconnect("Accepting connection failed");
             }
         }
 

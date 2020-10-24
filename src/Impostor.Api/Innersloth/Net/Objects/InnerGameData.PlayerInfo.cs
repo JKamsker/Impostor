@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 
-using Impostor.Api.Extensions;
 using Impostor.Api.Net.Messages;
 
 namespace Impostor.Api.Innersloth.Net.Objects

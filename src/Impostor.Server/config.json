@@ -6,7 +6,7 @@
     "ListenPort": 22023
   },
   "Debug": {
-    "GameRecorderEnabled": false,
-    "GameRecorderPath": ""
+    "GameRecorderEnabled": true,
+    "GameRecorderPath": "C:\\Users\\Weirdo\\source\\repos\\external\\Impostor\\.local\\packetdumps"
   }
 }

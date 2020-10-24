@@ -28,7 +28,7 @@ namespace Impostor.Tools.ServerReplay
 {
     internal static class Program
     {
-        private const string GameRecorderPath = "C:\\DevData\\ImpostorSessions";
+        private const string GameRecorderPath = @"C:\Users\Weirdo\source\repos\external\Impostor\.local\packetdumps";
 
         private static readonly ILogger Logger = Log.ForContext(typeof(Program));
         private static readonly Dictionary<int, IHazelConnection> Connections = new Dictionary<int, IHazelConnection>();
@@ -44,6 +44,7 @@ namespace Impostor.Tools.ServerReplay
         {
             Log.Logger = new LoggerConfiguration()
                 // .MinimumLevel.Verbose()
+                // .MinimumLevel.Fatal()
                 .MinimumLevel.Debug()
                 .WriteTo.Console()
                 .CreateLogger();
@@ -69,7 +70,8 @@ namespace Impostor.Tools.ServerReplay
 
             var elapsedMilliseconds = stopwatch.ElapsedMilliseconds;
 
-            Logger.Information($"Took {elapsedMilliseconds}ms.");
+            //Logger.Information($"Took {elapsedMilliseconds}ms.");
+            Console.WriteLine($"Took {elapsedMilliseconds}ms.");
         }
 
         private static ServiceProvider BuildServices()

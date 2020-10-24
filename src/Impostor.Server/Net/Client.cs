@@ -153,19 +153,17 @@ namespace Impostor.Server.Net
                     if (verified)
                     {
                         // Broadcast packet to all other players.
-                        using (var writer = MessageWriter.Get(messageType))
+                        using var writer = MessageWriter.Get(messageType);
+                        if (toPlayer)
                         {
-                            if (toPlayer)
-                            {
-                                var target = reader.ReadPackedInt32();
-                                reader.CopyTo(writer);
-                                await Player.Game.SendToAsync(writer, target);
-                            }
-                            else
-                            {
-                                reader.CopyTo(writer);
-                                await Player.Game.SendToAllExceptAsync(writer, Id);
-                            }
+                            var target = reader.ReadPackedInt32();
+                            reader.CopyTo(writer);
+                            await Player.Game.SendToAsync(writer, target);
+                        }
+                        else
+                        {
+                            reader.CopyTo(writer);
+                            await Player.Game.SendToAllExceptAsync(writer, Id);
                         }
                     }
 
